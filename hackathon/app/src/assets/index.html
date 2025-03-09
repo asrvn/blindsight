@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Flet App</title>
+    <style>
+      /* Hide the speak trigger element while keeping it in the DOM */
+      [data-key="speakTrigger"] {
+          display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="flet-app"></div>
+    <script>
+      function speakText(text) {
+          window.speechSynthesis.speak(new SpeechSynthesisUtterance(text));
+      }
+
+      // Once the DOM is loaded, set up a MutationObserver to watch for text changes.
+      document.addEventListener("DOMContentLoaded", function() {
+          // The Flet widget's key appears as a data attribute in the HTML.
+          const speakTrigger = document.querySelector('[data-key="speakTrigger"]');
+          if (speakTrigger) {
+              const observer = new MutationObserver(mutations => {
+                  mutations.forEach(mutation => {
+                      if(mutation.type === 'childList') {
+                          const newText = speakTrigger.textContent;
+                          if(newText) {
+                              speakText(newText);
+                          }
+                      }
+                  });
+              });
+              observer.observe(speakTrigger, { childList: true, subtree: true });
+          }
+      });
+    </script>
+    <!-- Flet runtime -->
+    <script src="https://cdn.jsdelivr.net/npm/flet"></script>
+  </body>
+</html>
